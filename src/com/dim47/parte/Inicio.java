@@ -4,7 +4,7 @@ package com.dim47.parte;
 
 import java.util.List;
 
-import com.dim47.excel.GeneraExcel;
+import com.dim47.excel.GeneradorExcel;
 import com.dim47.gestionHtml.LeerHtml;
 
 public class Inicio {
@@ -12,7 +12,8 @@ public class Inicio {
 		LeerHtml programaHtml = new LeerHtml();
 		List<Semana> programaList = null;
 		programaList = programaHtml.leerFromUrl("https://web.institutomilitar.com/semanal.html");
-		GeneraExcel.crearHoja("", programaList);
+		GeneradorExcel generador = new GeneradorExcel();
+		generador.crearHoja("", programaList);
 	
 	}
 }
