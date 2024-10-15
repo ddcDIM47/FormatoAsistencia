@@ -13,7 +13,7 @@ public class Inicio {
 		List<Semana> programaList = null;
 		programaList = programaHtml.leerFromUrl("https://web.institutomilitar.com/semanal.html");
 		GeneradorExcel generador = new GeneradorExcel();
-		generador.crearHoja("", programaList);
+		generador.crearHoja("Parte_Clase_XLVII_DIM", programaList);
 	
 	}
 }
