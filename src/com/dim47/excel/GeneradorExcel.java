@@ -1,20 +1,16 @@
 package com.dim47.excel;
 
-
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
-
-
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.Name;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
@@ -28,14 +24,14 @@ public class GeneradorExcel {
 
 	private Workbook hoja;
 	private final short TAMANOTITULO = 20;
+	private final short TAMANOSUB = 14;
 	
 	private Font aplicarFuenteTitulo(Workbook hoja) {
 		Font font = hoja.createFont();
 		
 		font.setFontHeightInPoints(TAMANOTITULO);
 		font.setBold(true);
-		//font.setUnderline((byte) 1);
-		
+		font.setUnderline((byte) 1);
 		return font;
 	}
 	
@@ -46,7 +42,11 @@ public class GeneradorExcel {
 		estilo.setBorderLeft(BorderStyle.THIN);
 	}
 	
-	private void aplicarEstiloTexto() {
+	private void aplicarEstiloTexto(CellStyle style) {
+		Font font = hoja.createFont();
+		font.setFontHeightInPoints(TAMANOSUB);
+		font.setBold(true);
+		style.setFont(font);
 		
 	}
 	
@@ -83,7 +83,6 @@ public class GeneradorExcel {
 		celda.setCellValue("DEPARTAMENTO DE SISTEMAS DE INFORMACIÓN Y CIBERDEFENSA DE LA ACING");
 		CellStyle cellStyle = hoja.createCellStyle();
 		cellStyle.setWrapText(true);
-		cellStyle.setWrapText(true);
 		centrarTexto(cellStyle);
 		Font fontTitulo = aplicarFuenteTitulo(hoja);
 		cellStyle.setFont(fontTitulo);
@@ -91,7 +90,7 @@ public class GeneradorExcel {
 		
 		indice += 2;
 		
-		sheet.addMergedRegion(new CellRangeAddress(indice, indice, 1, 17));
+		filaFusionada(sheet, indice, indice, 1, 17);
 		row = sheet.createRow(indice);
 		row.setHeightInPoints(TAMANOTITULO+2);
 		celda = row.createCell(1);
@@ -106,7 +105,6 @@ public class GeneradorExcel {
 	public Row createRow(Sheet sheet, short index, CellStyle style) {
 		
 		Row row = sheet.createRow(index);
-		
 		return row;
 		
 	}
@@ -114,10 +112,13 @@ public class GeneradorExcel {
 	public Cell createCelda(Row row, CellStyle style, int index, String valor) {
 		Cell celda = row.createCell(index);
 		celda.setCellStyle(style);
+		//style.setWrapText(true);
 		celda.setCellValue(valor);
 		return celda;
 	}
+	
 	public short crearCabeceraAlumnos(Sheet sheet, short indice) {
+		
 		
 		Font font1 = hoja.createFont();
 		font1.setBold(false);
@@ -131,7 +132,7 @@ public class GeneradorExcel {
 		Row row = createRow(sheet, indice, cellStyle);
 		
 		filaFusionada(sheet, indice, indice+1, 0, 0);
-		createCelda(row, cellStyle, 0, "Empleo");
+		createCelda(row, cellStyle, 0, "EMPLEO");
 		
 		filaFusionada(sheet, indice, indice+1, 1, 1);
 		createCelda(row, cellStyle, 1, "NOMBRE Y APELLIDOS");
@@ -149,44 +150,71 @@ public class GeneradorExcel {
 		
 		indice +=1;
 		row = sheet.createRow(indice);
-		createCelda(row, cellStyle, 3, "1ª");
-		createCelda(row, cellStyle, 4, "2ª");
-		createCelda(row, cellStyle, 5, "3ª");
-		createCelda(row, cellStyle, 6, "4ª");
-		createCelda(row, cellStyle, 7, "5ª");
-		createCelda(row, cellStyle, 8, "6ª");
-		
+		for (int i = 0; i < 6; i++) {
+			createCelda(row, cellStyle, 3+i, 1+i+"ª");
+		}
+				
 		return indice;
 	}
 	
 	
-	public  void crearHoja(String nombreHoja, List<Semana> programa) {
-		
-		short indiceFila = 1;
-		
+	private short completarDatos(Sheet sheet, CellStyle cellStyle, Semana semana, short indice) {
+		for (int i = 0; i < semana.getListaAsignatura().size(); i++) {
+			indice+=1;
+			filaFusionada(sheet, indice, indice, 2, 11);
+			Row row = sheet.createRow(indice);
+			createCelda(row, cellStyle, 1, semana.getListaAsignatura().get(i).getNombre());
+			createCelda(row, cellStyle, 2, semana.getListaAsignatura().get(i).getProfesor().getNombreString());
+			
+		}
+		return indice;
+	}
+	
+	
+	public void crearExcel(String nombre, List<Semana> programa) {
 		hoja = new HSSFWorkbook();
+		int i = 1;
+		for (Semana semana : programa) {
+			Sheet sheet = hoja.createSheet("semana" + i++);
+			crearHoja("", semana, sheet);
+		}
+	}
+	
+	private  void crearHoja(String nombreHoja, Semana programa, Sheet sheet) {
+	
+		short indiceFila = 1;
+				
+		for (int i = 0; i <= 17; i++) {
+			sheet.autoSizeColumn(i);
+		}
+		sheet.autoSizeColumn(10000);
+//		int i = 0;
+//		for (Semana semana : programa) {
+//			sheet = hoja.createSheet("excel-sheet" + i++);
+//		}
+//		
 		
-		Sheet sheet = hoja.createSheet("excel-sheet");
 		Row row = sheet.createRow(indiceFila);
 		Cell celda = row.createCell(indiceFila);
 		
 		indiceFila = creaTitulos(sheet, indiceFila);
-		CellStyle cellStyle = hoja.createCellStyle();
+		CellStyle cellStyles = hoja.createCellStyle();
+		centrarTexto(cellStyles);
+		aplicarEstiloTexto(cellStyles);
 		
 		indiceFila +=3;
-		sheet.addMergedRegion(new CellRangeAddress(indiceFila, indiceFila, 1, 17));
+		filaFusionada(sheet, indiceFila, indiceFila, 1, 17);
 		row = sheet.createRow(indiceFila);
-		celda = row.createCell(1);
+		row.setHeightInPoints(TAMANOSUB+2);
 		int year = Calendar.getInstance().get(Calendar.YEAR);
-		celda.setCellValue(programa.get(0).getTextoString() + " de " + year);
-		celda.setCellStyle(cellStyle);
-				
+		createCelda(row, cellStyles, 1, programa.getTextoString() + " de " + year);
+						
 		indiceFila +=1;
-		sheet.addMergedRegion(new CellRangeAddress(indiceFila, indiceFila, 1, 17));
+		filaFusionada(sheet, indiceFila, indiceFila, 1, 17);
 		row = sheet.createRow(indiceFila);
-		celda = row.createCell(1);
-		celda.setCellValue("FALTAS DE ASISTENCIA AL CURSO");
-		celda.setCellStyle(cellStyle);
+		row.setHeightInPoints(TAMANOSUB+2);
+		createCelda(row, cellStyles, 1, "FALTAS DE ASISTENCIA AL CURSO");
+		
 		
 		/*------------------------CREAMOS TABLA-----------------------------------------*/
 		
@@ -198,6 +226,8 @@ public class GeneradorExcel {
 		/*-------------------------------------------------------------------*/
 		//font.setUnderline((byte) 0);
 		//cellStyle.setFont(font);
+		CellStyle cellStyle = hoja.createCellStyle();
+//		centrarTexto(cellStyle);
 		celda.setCellStyle(cellStyle);
 		
 		indiceFila+=1;
@@ -237,88 +267,62 @@ public class GeneradorExcel {
 		
 		indiceFila+=1;
 		row = sheet.createRow(indiceFila);
-		createCelda(row, cellStyle, 0, "Observaciones");
+		createCelda(row, cellStyle, 0, "OBSERVACIONES");
 		
 		
 		indiceFila+=1;
 		filaFusionada(sheet, indiceFila, indiceFila, 0, 17);
 		
 		/*------Tabla profesorado--------------------------------------------*/
+		CellStyle styleDatos = hoja.createCellStyle();
+		centrarTexto(styleDatos);
+		
 		indiceFila+=4;
 		row = sheet.createRow(indiceFila);
 		celda = row.createCell(1);
 		filaFusionada(sheet, indiceFila, indiceFila, 1, 17);
 		celda.setCellValue("DISTRIBUCIÓN DEL PROFESORADO");
-		
+		celda.setCellStyle(cellStyles);
 		indiceFila += 1;
 		row = sheet.createRow(indiceFila);
 		
-		celda = row.createCell(0);
+		
 		filaFusionada(sheet, indiceFila, indiceFila+1, 0, 0);
-		celda.setCellValue("DÍA");
-		celda = row.createCell(1);
+		createCelda(row, styleDatos, 0, "DÍA");
+	
 		filaFusionada(sheet, indiceFila, indiceFila+1, 1, 1);
-		celda.setCellValue("ASIGNATURA");
-		celda = row.createCell(2);
+		createCelda(row, styleDatos, 1, "ASIGNATURA");
+		
 		filaFusionada(sheet, indiceFila, indiceFila+1, 2, 11);
-		celda.setCellValue("PROFESOR");
-		celda = row.createCell(12);
+		createCelda(row, styleDatos, 2, "PROFESOR");
+		
 		filaFusionada(sheet, indiceFila, indiceFila, 12, 17);
-		celda.setCellValue("HORAS");
+		createCelda(row, styleDatos, 12, "HORAS");
 		
 		indiceFila +=1;
 		row = sheet.createRow(indiceFila);
-		celda = row.createCell(12);
-		celda.setCellValue("1ª");
+		for (int i = 0; i < 6; i++) {
+			createCelda(row, styleDatos, 12+i, 1+i+"ª");
+		}
 		
-		celda = row.createCell(13);
-		celda.setCellValue("2ª");
 		
-		celda = row.createCell(14);
-		celda.setCellValue("3ª");
 		
-		celda = row.createCell(15);
-		celda.setCellValue("4ª");
-		
-		celda = row.createCell(16);
-		celda.setCellValue("5ª");
-		
-		celda = row.createCell(17);
-		celda.setCellValue("6ª");
 		/*Rellenamos los datos*/
-		indiceFila+=1;
-		row = sheet.createRow(indiceFila);
-		celda = row.createCell(1);
-		celda.setCellValue(programa.get(0).getListaAsignatura().get(0).getNombre());
-		celda = row.createCell(2);
-		celda.setCellValue(programa.get(0).getListaAsignatura().get(0).getProfesor().getNombreString());
 		
-		indiceFila+=1;
-		row = sheet.createRow(indiceFila);
-		celda = row.createCell(1);
-		celda.setCellValue(programa.get(0).getListaAsignatura().get(1).getNombre());
-		celda = row.createCell(2);
-		celda.setCellValue(programa.get(0).getListaAsignatura().get(1).getProfesor().getNombreString());
-		
-		indiceFila+=1;
-		row = sheet.createRow(indiceFila);
-		celda = row.createCell(1);
-		celda.setCellValue(programa.get(0).getListaAsignatura().get(2).getNombre());
-		celda = row.createCell(2);
-		celda.setCellValue(programa.get(0).getListaAsignatura().get(2).getProfesor().getNombreString());
+		indiceFila = completarDatos(sheet, cellStyle, programa, indiceFila);
 		
 		
 		/*-------------------------------------------*/
 		indiceFila += 15;
 		row = sheet.createRow(indiceFila);
-		celda = row.createCell(0);
-		celda.setCellValue("OBSERVACIONES");
-		
+		createCelda(row, cellStyle, 0, "OBSERVACIONES");
+				
 		indiceFila += 1;
 		row = sheet.createRow(indiceFila);
-		sheet.addMergedRegion(new CellRangeAddress(indiceFila, indiceFila, 0, 17));
+		filaFusionada(sheet, indiceFila, indiceFila, 0, 17);
 		/*-------------------------------------------------------------------*/
 		
+		sheet.setColumnWidth(1, 10000);
 
 		
 		try {
