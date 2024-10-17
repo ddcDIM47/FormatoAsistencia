@@ -4,6 +4,7 @@ public class Asignatura {
 	private String nombre;
 	private Profesor profesor;
 	
+	
 	public Asignatura() {
 		super();
 	}

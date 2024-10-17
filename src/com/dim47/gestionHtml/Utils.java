@@ -11,4 +11,11 @@ public class Utils {
 		return matcher.find();
 		
 	}
+
+	public static boolean matchSemana(String busqueda) {
+		String patron = "LUNES|MARTES|MIÉRCOLES|JUEVES|VIERNES";
+		Pattern pattern = Pattern.compile(patron, Pattern.CASE_INSENSITIVE);
+		Matcher matcher = pattern.matcher(busqueda);
+		return matcher.find();
+	}
 }

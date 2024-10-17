@@ -10,7 +10,7 @@ import com.dim47.gestionHtml.LeerHtml;
 public class Inicio {
 	public static void main(String[] args) {
 		LeerHtml programaHtml = new LeerHtml();
-		List<Semana> programas = programaHtml.leerFromUrl("https://web.institutomilitar.com/semanal.html");
+		List<Semana> programas = programaHtml.leerFromUrl(args[0]);
 		GeneradorExcel generador = new GeneradorExcel();
 		generador.crearExcel("Parte_Clase_XLVII_DIM", programas);
 	}

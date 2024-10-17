@@ -50,7 +50,27 @@ public class GeneradorExcel {
 		
 	}
 	
-	private void aplicarLineasTabla() {
+	private void aplicarLineasTabla(Sheet sheet, CellStyle estilo, short filaI, short filaF, short columnaI, short ColumnaF) {
+		for (short i = filaI; i < filaF; i++) {
+			Row row = sheet.getRow(i);
+//			filaFusionada(sheet, i, i, 9, ColumnaF);
+				if(row == null) {
+					row = createRow(sheet, i, estilo);
+				}	
+					
+			for (int j = columnaI; j < ColumnaF; j++) {
+				createCelda(row, estilo, j, " ");				
+			}
+		}
+	}
+	
+	private void fusionarFilas(Sheet sheet, CellStyle estilo, short filaI, short filaF, short columnaI, short columnaF) {
+		
+		for (short i = filaI; i < filaF; i++) {
+			
+			filaFusionada(sheet, i, i, columnaI, columnaF);
+		}
+		
 		
 	}
 	
@@ -131,42 +151,45 @@ public class GeneradorExcel {
 		indice +=1;
 		Row row = createRow(sheet, indice, cellStyle);
 		
+		
 		filaFusionada(sheet, indice, indice+1, 0, 0);
 		createCelda(row, cellStyle, 0, "EMPLEO");
+		
 		
 		filaFusionada(sheet, indice, indice+1, 1, 1);
 		createCelda(row, cellStyle, 1, "NOMBRE Y APELLIDOS");
 		
+		
 		filaFusionada(sheet, indice, indice+1, 2, 2);
 		createCelda(row, cellStyle, 2, "DÍA");
-		
+				
 		filaFusionada(sheet,indice, indice, 3, 8);
 		createCelda(row, cellStyle, 3, "HORAS");
 				
 		filaFusionada(sheet,indice, indice+1, 9, 17);
 		createCelda(row, cellStyle, 9, "OBSERVACIONES");
-		
-		aplicarBordesTabla(cellStyle);
+				
 		
 		indice +=1;
 		row = sheet.createRow(indice);
-		for (int i = 0; i < 6; i++) {
-			createCelda(row, cellStyle, 3+i, 1+i+"ª");
+		for (int i = 0; i < 17; i++) {
+			
+			createCelda(row, cellStyle, i, i-2+"ª");
 		}
-				
+		aplicarBordesTabla(cellStyle);	
 		return indice;
 	}
 	
 	
 	private short completarDatos(Sheet sheet, CellStyle cellStyle, Semana semana, short indice) {
-		for (int i = 0; i < semana.getListaAsignatura().size(); i++) {
-			indice+=1;
-			filaFusionada(sheet, indice, indice, 2, 11);
-			Row row = sheet.createRow(indice);
-			createCelda(row, cellStyle, 1, semana.getListaAsignatura().get(i).getNombre());
-			createCelda(row, cellStyle, 2, semana.getListaAsignatura().get(i).getProfesor().getNombreString());
-			
-		}
+//		for (int i = 0; i < semana.getListaAsignatura().size(); i++) {
+//			indice+=1;
+////			filaFusionada(sheet, indice, indice, 2, 11);
+////			Row row = sheet.createRow(indice);
+////			createCelda(row, cellStyle, 1, semana.getListaAsignatura().get(i).getNombre());
+////			createCelda(row, cellStyle, 2, semana.getListaAsignatura().get(i).getProfesor().getNombreString());
+////			aplicarBordesTabla(cellStyle);
+//		}
 		return indice;
 	}
 	
@@ -267,11 +290,17 @@ public class GeneradorExcel {
 		
 		indiceFila+=1;
 		row = sheet.createRow(indiceFila);
+		filaFusionada(sheet, indiceFila, indiceFila, 0, 1);
 		createCelda(row, cellStyle, 0, "OBSERVACIONES");
 		
 		
 		indiceFila+=1;
 		filaFusionada(sheet, indiceFila, indiceFila, 0, 17);
+		aplicarBordesTabla(cellStyle);
+		aplicarLineasTabla(sheet, cellStyle, (short)10, (short)18, (short)2, (short)18);
+		fusionarFilas(sheet, cellStyle, (short)10, (short)17, (short)9, (short)17);
+		fusionarFilas(sheet, cellStyle, (short)17, (short)18, (short)2, (short)17);
+		
 		
 		/*------Tabla profesorado--------------------------------------------*/
 		CellStyle styleDatos = hoja.createCellStyle();
@@ -306,15 +335,17 @@ public class GeneradorExcel {
 		}
 		
 		
-		
+		aplicarBordesTabla(styleDatos);
 		/*Rellenamos los datos*/
 		
 		indiceFila = completarDatos(sheet, cellStyle, programa, indiceFila);
-		
+		aplicarLineasTabla(sheet, cellStyle, (short)28, (short)42, (short)0, (short)18);
 		
 		/*-------------------------------------------*/
 		indiceFila += 15;
 		row = sheet.createRow(indiceFila);
+		filaFusionada(sheet, indiceFila, indiceFila, 0, 1);
+		fusionarFilas(sheet, cellStyle, (short)42, (short)43, (short)2, (short)17);
 		createCelda(row, cellStyle, 0, "OBSERVACIONES");
 				
 		indiceFila += 1;
