@@ -17,7 +17,7 @@ import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 
-
+import com.dim47.parte.Asignatura;
 import com.dim47.parte.Semana;
 
 public class GeneradorExcel {
@@ -181,15 +181,30 @@ public class GeneradorExcel {
 	}
 	
 	
-	private short completarDatos(Sheet sheet, CellStyle cellStyle, Semana semana, short indice) {
-//		for (int i = 0; i < semana.getListaAsignatura().size(); i++) {
-//			indice+=1;
-////			filaFusionada(sheet, indice, indice, 2, 11);
-////			Row row = sheet.createRow(indice);
-////			createCelda(row, cellStyle, 1, semana.getListaAsignatura().get(i).getNombre());
-////			createCelda(row, cellStyle, 2, semana.getListaAsignatura().get(i).getProfesor().getNombreString());
-////			aplicarBordesTabla(cellStyle);
-//		}
+	private short completarDatos(Sheet sheet, CellStyle cellStyle, Semana semana, short indice, List<Asignatura> asignaturas) {
+		int i = 0;
+		boolean seguir = true;
+		while ( i < semana.getListaDias().length) {
+			
+			Row row = sheet.createRow(indice);
+			createCelda(row, cellStyle, 0, semana.getListaDias()[i].getNombre());
+			
+			Asignatura asigActual = semana.getListaDias()[i].horaArray[0].asignatura;
+			int index = 0;
+			while((index < 6) && seguir) {
+				if (asigActual.getNombre() == semana.getListaDias()[i].horaArray[index].asignatura.getNombre()) {
+					createCelda(row, cellStyle, index+12,"X");
+					index++;
+				}else {
+					//añadir la comprobacion de si cambia de asignatura
+					seguir = false;
+				}
+				
+			}
+			seguir=true;
+			i++;
+		}
+		aplicarBordesTabla(cellStyle);
 		return indice;
 	}
 	
@@ -211,11 +226,6 @@ public class GeneradorExcel {
 			sheet.autoSizeColumn(i);
 		}
 		sheet.autoSizeColumn(10000);
-//		int i = 0;
-//		for (Semana semana : programa) {
-//			sheet = hoja.createSheet("excel-sheet" + i++);
-//		}
-//		
 		
 		Row row = sheet.createRow(indiceFila);
 		Cell celda = row.createCell(indiceFila);
@@ -338,7 +348,7 @@ public class GeneradorExcel {
 		aplicarBordesTabla(styleDatos);
 		/*Rellenamos los datos*/
 		
-		indiceFila = completarDatos(sheet, cellStyle, programa, indiceFila);
+		indiceFila = indiceFila;//completarDatos(sheet, cellStyle, programa, indiceFila);
 		aplicarLineasTabla(sheet, cellStyle, (short)28, (short)42, (short)0, (short)18);
 		
 		/*-------------------------------------------*/

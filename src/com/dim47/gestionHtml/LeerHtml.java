@@ -212,7 +212,7 @@ public class LeerHtml {
 							asignatura = new Asignatura();
 							asignatura.setNombre(link.get(0).text());
 							dias[indexDia].horaArray[indexHora].asignatura=asignatura;
-							System.out.println("Dia " + indexDia + "Hora: " + indexHora);
+							
 						}
 	        			index++;	        			
 	        			link.remove(0);
@@ -225,38 +225,6 @@ public class LeerHtml {
 		    	
 		    	
 		    }
-		    
-//		    for (int i = 0; i < link.size(); i++) 
-//		    {
-//		       	stringLink = link.get(i).text();
-//		        if (Utils.matchString("SEMANA", stringLink)) {
-//		        	contadorSemana++;
-//		        	i++;
-//		        }else {
-//					if (contadorSemana==indice) { //falla el tema de los indices
-//						
-//						//System.out.println(stringLink);
-//						while(!Utils.matchString("asignatura", stringLink) && flag && i<link.size()) {
-//							for (contadorDia = 0; contadorDia < dias.length; contadorDia++) {
-//								stringLink = link.get(i).text();
-//								Dia dia = new Dia(stringLink);
-//								dias[contadorDia] = dia;
-//								i++;
-//							}
-//							flag = false;
-//							Asignatura a = new Asignatura();
-//							a.setNombre(link.get(i).text());
-//							hour = dias[i%5].horaArray;
-//							int b = i%6;
-//							hour[b].asignatura = a;
-//							dias[i%5].horaArray = hour;
-//							i++;
-//						}
-//						flag = true;
-//					} 
-//				}
-//		     }
-		   System.out.println("finDias: " + index);
 		return dias;
 	}
 	
