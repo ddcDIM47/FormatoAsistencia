@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -183,25 +185,31 @@ public class GeneradorExcel {
 	
 	private short completarDatos(Sheet sheet, CellStyle cellStyle, Semana semana, short indice, List<Asignatura> asignaturas) {
 		int i = 0;
-		boolean seguir = true;
 		while ( i < semana.getListaDias().length) {
-			
+			int index = 0;
 			Row row = sheet.createRow(indice);
 			createCelda(row, cellStyle, 0, semana.getListaDias()[i].getNombre());
+			indice++;
+			Asignatura asigActual = semana.getListaDias()[i].horaArray[index].asignatura;
+			createCelda(row, cellStyle, 1, asigActual.getNombre());
 			
-			Asignatura asigActual = semana.getListaDias()[i].horaArray[0].asignatura;
-			int index = 0;
-			while((index < 6) && seguir) {
-				if (asigActual.getNombre() == semana.getListaDias()[i].horaArray[index].asignatura.getNombre()) {
-					createCelda(row, cellStyle, index+12,"X");
-					index++;
-				}else {
-					//añadir la comprobacion de si cambia de asignatura
-					seguir = false;
-				}
-				
+			while((index < 6)) { 
+				Asignatura as = semana.getListaDias()[i].horaArray[index].asignatura;
+				if (as != null) {
+					if (as!=null && asigActual.getNombre().equals(as.getNombre())) {
+						createCelda(row, cellStyle, index+12, "X");
+					}else {
+						asigActual = semana.getListaDias()[i].horaArray[index].asignatura;
+						row = sheet.createRow(indice);
+						createCelda(row, cellStyle, 0, semana.getListaDias()[i].getNombre());
+						createCelda(row, cellStyle, 1, asigActual.getNombre());
+						createCelda(row, cellStyle, index+12, "X");
+						indice++;
+					}
+				 }
+				index++;
 			}
-			seguir=true;
+			
 			i++;
 		}
 		aplicarBordesTabla(cellStyle);
@@ -347,9 +355,9 @@ public class GeneradorExcel {
 		
 		aplicarBordesTabla(styleDatos);
 		/*Rellenamos los datos*/
-		
-		indiceFila = indiceFila;//completarDatos(sheet, cellStyle, programa, indiceFila);
-		aplicarLineasTabla(sheet, cellStyle, (short)28, (short)42, (short)0, (short)18);
+		indiceFila++;
+		indiceFila = completarDatos(sheet, cellStyle, programa, indiceFila, null);
+		//aplicarLineasTabla(sheet, cellStyle, indiceFila, (short)42, (short)0, (short)18);
 		
 		/*-------------------------------------------*/
 		indiceFila += 15;

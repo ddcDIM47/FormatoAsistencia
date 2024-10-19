@@ -1,11 +1,11 @@
 package com.dim47.parte;
 
-
+import java.util.List;
 
 public class Semana {
 	private String textoString;
 	private Dia[] listaDias;
-	//private List<Asignatura> listaAsignatura;
+	private List<Asignatura> listaAsignatura;
 	
 		
 	public Semana() {
@@ -33,6 +33,12 @@ public class Semana {
 	public void setListaDias(Dia[] listaDias) {
 		this.listaDias = listaDias;
 	}
+
+  public List<Asignatura> getListaAsignatura() {
+  return listaAsignatura;}
+
+  public void setListaAsignatura(List<Asignatura> listaAsignatura) {
+  this.listaAsignatura = listaAsignatura;}
 
 	
 }

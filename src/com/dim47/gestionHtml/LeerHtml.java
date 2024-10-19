@@ -151,9 +151,9 @@ public class LeerHtml {
 	        	if (Utils.matchString("Semana del", stringLink)) {
 	        		Semana semana = new Semana(stringLink);
 	        		semana.setListaDias(generarDias(link2,indice));
-	        		//List<Asignatura> listaA = getAsignaturas(doc, indice);
+	        		List<Asignatura> listaA = getAsignaturas(doc, indice);
 	        	    
-	        		//semana.setListaAsignatura();
+	        		semana.setListaAsignatura(listaA);
 	        		indice++;
 	        		lista.add(semana);
 	        		
