@@ -19,6 +19,7 @@ import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 
+import com.dim47.gestionHtml.Utils;
 import com.dim47.parte.Asignatura;
 import com.dim47.parte.Semana;
 
@@ -183,20 +184,40 @@ public class GeneradorExcel {
 	}
 	
 	
-	private short completarDatos(Sheet sheet, CellStyle cellStyle, Semana semana, short indice, List<Asignatura> asignaturas) {
+	private void nNombre(List<Asignatura> asignaturas) {
+		
+	}
+	
+	private short completarDatos(Sheet sheet, CellStyle cellStyle, Semana semana, short indice ) {
 		int i = 0;
 		while ( i < semana.getListaDias().length) {
 			int index = 0;
 			Row row = sheet.createRow(indice);
 			createCelda(row, cellStyle, 0, semana.getListaDias()[i].getNombre());
-			indice++;
+			filaFusionada(sheet, indice, indice, 2, 11);
+			
 			Asignatura asigActual = semana.getListaDias()[i].horaArray[index].asignatura;
 			createCelda(row, cellStyle, 1, asigActual.getNombre());
 			
+			for (Asignatura asig : semana.getListaAsignatura()) {
+				if (Utils.matchString(asig.getNombre(),asigActual.getNombre())) {
+					createCelda(row, cellStyle, 2, asig.getProfesor().getNombreString());
+				}
+			}
+			
+			aplicarBordesTabla(cellStyle);
+			indice++;
+			
+			
 			while((index < 6)) { 
+				System.out.println("I: " + i + " index: " + index);
+				aplicarBordesTabla(cellStyle);
+				createCelda(row, cellStyle, index+12, " ");
 				Asignatura as = semana.getListaDias()[i].horaArray[index].asignatura;
+				//filaFusionada(sheet, indice+1, indice+1, 2, 11);
 				if (as != null) {
-					if (as!=null && asigActual.getNombre().equals(as.getNombre())) {
+					if (Utils.matchString(asigActual.getNombre(),as.getNombre())) {
+						
 						createCelda(row, cellStyle, index+12, "X");
 					}else {
 						asigActual = semana.getListaDias()[i].horaArray[index].asignatura;
@@ -204,9 +225,20 @@ public class GeneradorExcel {
 						createCelda(row, cellStyle, 0, semana.getListaDias()[i].getNombre());
 						createCelda(row, cellStyle, 1, asigActual.getNombre());
 						createCelda(row, cellStyle, index+12, "X");
+						filaFusionada(sheet, indice, indice, 2, 11);
+						for (Asignatura asig : semana.getListaAsignatura()) {
+							if (Utils.matchString(asig.getNombre(),asigActual.getNombre())) {
+								createCelda(row, cellStyle, 2, asig.getProfesor().getNombreString());
+							}
+						}
+						
 						indice++;
+						
 					}
 				 }
+					 
+				 
+				
 				index++;
 			}
 			
@@ -356,7 +388,8 @@ public class GeneradorExcel {
 		aplicarBordesTabla(styleDatos);
 		/*Rellenamos los datos*/
 		indiceFila++;
-		indiceFila = completarDatos(sheet, cellStyle, programa, indiceFila, null);
+		indiceFila = completarDatos(sheet, cellStyle, programa, indiceFila);
+		//
 		//aplicarLineasTabla(sheet, cellStyle, indiceFila, (short)42, (short)0, (short)18);
 		
 		/*-------------------------------------------*/
